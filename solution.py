@@ -155,14 +155,15 @@ def path_to_goal_plotter(path_to_goal):
         i.vert2.printer() #prints the vertices on the path
     print("path length is(number of nodes traversed +/- 1): "+str(len(path_to_goal)))
     goal_vertex.printer()
-
+    
+'''
 def path_shortcutter(path_to_goal, resolution):
     vertexes_in_path = 
     i = 1
     while True:
         if path(path_to_goal[i].vert1,path_to_goal[i]
     return new_path_to_goal
-            
+ '''           
         
 start_vertex = vertex(x_start, y_start)
 goal_vertex = vertex(x_goal, y_goal)
@@ -180,8 +181,8 @@ while len_path_old!=len_path_new:
     path_obstacle_collision_handler(100)
     len_path_new = len(paths)
 print(len(paths))
-#path_to_goal_plotter(path_finder())
+path_to_goal_plotter(path_finder())
 #new_path_length = path_shortcutter(path_finder())
 #print(new_path_length)
-path_to_goal_plotter(path_shortcutter(path_finder(), 100))
+#path_to_goal_plotter(path_shortcutter(path_finder(), 100))
 print("Time from start till now : %s seconds " % (time.time() - start_time))
