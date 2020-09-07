@@ -148,7 +148,7 @@ def path_finder():
             print('Error: Path to goal too long. Please increase path length limiter at line 136. Path length can be reduced with the shortcutting function later.')
             print(path_to_goal[1].length==path_to_goal[3].length)
             break
-        return path_to_goal
+    return path_to_goal
 
 def path_to_goal_plotter(path_to_goal):
     for i in path_to_goal:
@@ -156,15 +156,14 @@ def path_to_goal_plotter(path_to_goal):
         i.vert2.printer() #prints the vertices on the path
     print("path length is(number of nodes traversed +/- 1): "+str(len(path_to_goal)))
     goal_vertex.printer()
-    
-'''
-def path_shortcutter(path_to_goal, resolution):
+
+"""def path_shortcutter(path_to_goal, resolution):
     vertexes_in_path = 
     i = 1
     while True:
         if path(path_to_goal[i].vert1,path_to_goal[i]
-    return new_path_to_goal
- '''           
+    return new_path_to_goal"""
+            
         
 start_vertex = vertex(x_start, y_start)
 goal_vertex = vertex(x_goal, y_goal)
