@@ -148,6 +148,7 @@ def path_finder():
             print('Error: Path to goal too long. Please increase path length limiter at line 136. Path length can be reduced with the shortcutting function later.')
             print(path_to_goal[1].length==path_to_goal[3].length)
             break
+        return path_to_goal
 
 def path_to_goal_plotter(path_to_goal):
     for i in path_to_goal:
