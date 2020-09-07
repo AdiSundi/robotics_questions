@@ -11,14 +11,13 @@ import environment_2d
 # generate 2D environment, obstacles, goal and start
 pl.ion()                                               # interactive mode on
 np.random.seed(4)                                      # seed the generator(same seed number(int64) will always produce same environment)
-env = environment_2d.Environment(10, 6, 5)             # create a 10x6 environment with 5 triangular obstacles
+env = environment_2d.Environment(10, 6, 5)             # create a 10x6 environment with 5 triangular obstacles. If this is changed, arguments to vertex generator in function main() should also be changed
 pl.clf()                                               # what does this do? irrelevant.
 env.plot()                                             # plot the environment
 q = env.random_query()                                 # assigns start and end positions (randomly?)
 if q is not None:
     x_start, y_start, x_goal, y_goal = q
     env.plot_query(x_start, y_start, x_goal, y_goal)   # plots start and goal positions
-
 
 
 # create a vertex class with coordinates, a function to print coordinates and the set of closest vertices
@@ -33,6 +32,10 @@ class vertex():
 
     def printer(self):
         print(self.x, self.y)
+
+start_vertex = vertex(x_start, y_start)
+goal_vertex = vertex(x_goal, y_goal)
+vertices = [start_vertex, goal_vertex] #list of all vertices
 
 # create a path class with the two nodes each path connects, slope of the path, length of the path, and 
 # a function to check if the path collides with obstacles
@@ -60,6 +63,9 @@ class path():
             if env.check_collision(x_temp, y_temp):
                 return True
 
+paths =[]   #list of all paths
+
+
 #create a function to generate vertices, given the bounds xLow, xHigh, yLow and yHigh of C(free), ensuring
 #no vertex is inside an obstacle
 def vertex_generator(xLow,xHigh,yLow,yHigh,numberOfVertices):
@@ -86,7 +92,9 @@ def path_generator():
                 if path(i,j).length<3:
                     paths.append(path(i,j))
                     i.set_associatedVertices(j)
-                    j.set_associatedVertices(i)
+                    j.set_associatedVertices(i)          #create paths if vertices are within a 3 unit radius
+                    
+    #if no vertices are within a 3 unit radius, add the two closest paths
     for i in vertices:
         lowest_index = 0
         current_lowest_length = 0
@@ -153,36 +161,57 @@ def path_finder():
 def path_to_goal_plotter(path_to_goal):
     for i in path_to_goal:
         pl.plot([i.vert1.x, i.vert2.x], [i.vert1.y, i.vert2.y])
-        i.vert2.printer() #prints the vertices on the path
+        #i.vert2.printer() #prints the vertices on the path
     print("path length is(number of nodes traversed +/- 1): "+str(len(path_to_goal)))
-    goal_vertex.printer()
+    #goal_vertex.printer()
 
-"""def path_shortcutter(path_to_goal, resolution):
-    vertexes_in_path = 
-    i = 1
-    while True:
-        if path(path_to_goal[i].vert1,path_to_goal[i]
-    return new_path_to_goal"""
-            
-        
-start_vertex = vertex(x_start, y_start)
-goal_vertex = vertex(x_goal, y_goal)
-vertices = [start_vertex, goal_vertex]
-vertex_generator(0,10,0,6,100)
-paths =[]
-plot_vertices()
-path_generator()
+#shortcutting function using n and n+2 vertexes instead of points on the lines:
+def path_shortcutter(path_to_goal, resolution):
+    vertices_in_path = [start_vertex]
+    new_vertices_in_path = [start_vertex]
+    new_path_to_goal = []
+    for i in path_to_goal:
+        vertices_in_path.append(i.vert2)
+    i = 0
+    while i < len(vertices_in_path):
 
-len_path_old = len(paths)
-len_path_new = 0
-while len_path_old!=len_path_new:
-    print(len(paths))
+        for j in range(10):
+            if (i-j+3)<len(vertices_in_path):
+                if path(vertices_in_path[i],vertices_in_path[i+3-j]).collisionCheck(resolution):
+                    pass
+                else:
+                    new_vertices_in_path.append(vertices_in_path[i+3-j])
+                    i = i+3-j
+                    break
+        i += 1
+    for i in range(1,len(new_vertices_in_path)):
+        new_path_to_goal.append(path(new_vertices_in_path[i-1],new_vertices_in_path[i]))
+    return new_path_to_goal
+
+def main(obstacle_detection_resolution, option):    
+    vertex_generator(0,10,0,6,100)
+    plot_vertices()
+    path_generator()
+    
     len_path_old = len(paths)
-    path_obstacle_collision_handler(100)
-    len_path_new = len(paths)
-print(len(paths))
-path_to_goal_plotter(path_finder())
-#new_path_length = path_shortcutter(path_finder())
-#print(new_path_length)
-#path_to_goal_plotter(path_shortcutter(path_finder(), 100))
+    len_path_new = 0
+    while len_path_old!=len_path_new:
+        len_path_old = len(paths)
+        path_obstacle_collision_handler(100)
+        len_path_new = len(paths)
+    if option == 1:
+        plot_paths()
+    elif option==2:
+        path_to_goal_plotter(path_finder())
+    elif option==3:
+        path_to_goal_plotter(path_shortcutter(path_finder(), 100))
+    else :
+        print('enter a valid option number')
+
+
+print("please type the option number you would like: \n1)plot all paths \n2)plot the initial path to goal(solution to problem 1) \n3)plot the path after shortcutting\n")
+option = int(input("only enter numbers (eg.: 1 )\n"))
+print('Please do not be alarmed by lack of output. Program usually takes around 60-80 seconds to run.\n')
+main(100,option)
 print("Time from start till now : %s seconds " % (time.time() - start_time))
+print('if there is a narrow part of an obstacle that is being crossed by a path, increase the first parameter in the function main(), whose default value is 100.' )
